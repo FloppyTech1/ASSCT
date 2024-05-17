@@ -90,69 +90,64 @@ path_to_webdriver = r"C:\Users\moeal\OneDrive\Desktop\msedgedriver.exe"
 service = Service(executable_path=path_to_webdriver)
 driver = webdriver.Edge(service=service)
 
+def wait_and_click(driver, by, value, timeout=30):
+    element = WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((by, value)))
+    element.click()
+    return element
+
+def click_button_by_index(driver, value, timeout=30):
+    buttons = WebDriverWait(driver, timeout).until(EC.presence_of_all_elements_located((By.TAG_NAME, "button")))
+    buttons[value].click()
+
+def click_button_by_index_a(driver, value, timeout=30):
+    buttons = WebDriverWait(driver, timeout).until(EC.presence_of_all_elements_located((By.TAG_NAME, "a")))
+    buttons[value].click()
+
+def wait_and_send_keys(driver, by, value, keys, timeout=30):
+    element = WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((by, value)))
+    element.send_keys(keys)
+    return element
+
 driver.get('https://shopify.pxf.io/DKzaGd')
 driver.maximize_window()
 
 # Click Start Free Trial
-start_free_trial_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Start free trial')]")))
-start_free_trial_button.click()
-time.sleep(10)
+wait_and_click(driver, By.XPATH, "//button[contains(text(), 'Start free trial')]")
 
 # Click Skip All
-skip_all_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "Polaris-Button--monochrome_14jw2")))
-skip_all_button.click()
+wait_and_click(driver, By.CLASS_NAME, "Polaris-Button--monochrome_14jw2")
 
 # Select Country
-select_country = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "Polaris-Select_ss8pm")))
-select_country.click()
-
-# Select Country using PyAutoGUI
+wait_and_click(driver, By.CLASS_NAME, "Polaris-Select_ss8pm")
 pyautogui.write(country)
-
-# Click enter using PyAutoGUY
 pyautogui.press("enter")
 
-# Wait a second
-time.sleep(1)
-
-# Click Next
-next_button_menu = driver.find_elements(By.XPATH, "//button")
-next_button_menu[-1].click() # Note that we find the button by index since it's information is not unique
-time.sleep(3)
+click_button_by_index(driver, -1)
 
 # Click Signup With Email
-signup_with_email_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "account-picker__action-icon")))
-signup_with_email_button.click()
+wait_and_click(driver, By.CLASS_NAME, "account-picker__action-icon")
 
 # Input Email
-email_input = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "account_email")))
-email_input.send_keys(email)
+wait_and_send_keys(driver, By.ID, "account_email", email)
 
 # Input Password
-password_input = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "account_password")))
-password_input.send_keys(password)
+wait_and_send_keys(driver, By.ID, "account_password", password)
 
 # Click Create Shopify Account
-create_shopify_account_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "captcha__submit")))
-create_shopify_account_button.click()
+wait_and_click(driver, By.CLASS_NAME, "captcha__submit")
 
 # Click Online Store
-online_store_link = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.LINK_TEXT, "Online Store")))
-online_store_link.click()
-time.sleep(10)
+wait_and_click(driver, By.LINK_TEXT, "Online Store")
+time.sleep(5)
 
 # Switch to iframe with the Add Theme button
 frame = driver.find_elements(By.XPATH, "//iframe")
 driver.switch_to.frame(frame[0])
 
 # Click Add Theme
-add_theme_button = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.ID, "UploadThemeModalActivator")))
-add_theme_button.click()
-time.sleep(3)
+wait_and_click(driver, By.ID, "UploadThemeModalActivator")
 
-upload_zip_file_button = driver.find_elements(By.XPATH, "//button")
-upload_zip_file_button[9].click() # Note that we find the button by index since it's information is not unique
-time.sleep(3)
+click_button_by_index(driver, 9)
 
 # Switch back to the main iframe
 driver.switch_to.default_content()
@@ -162,18 +157,16 @@ frames = driver.find_elements(By.XPATH, "//iframe")
 driver.switch_to.frame(frames[1])
 
 # Click Add File
-add_file_button = driver.find_elements(By.XPATH, "//button")
-add_file_button[1].click() # Note that we find the button by index since it's information is not unique
-time.sleep(2)
+click_button_by_index(driver, 1)
+time.sleep(1)
 
 # Use pyautogui to upload file
 pyautogui.write(theme_file)
 pyautogui.press("enter")
+time.sleep(1)
 
 # Click Upload File
-upload_file_button = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CLASS_NAME, "Polaris-Button--variantPrimary_1stsb")))
-upload_file_button.click()
-time.sleep(10)
+wait_and_click(driver, By.CLASS_NAME, "Polaris-Button--variantPrimary_1stsb")
 
 # Switch back to the main iframe
 driver.switch_to.default_content()
@@ -181,11 +174,10 @@ driver.switch_to.default_content()
 # Switch to the iframe with the Publish button
 frames = driver.find_elements(By.XPATH, "//iframe")
 driver.switch_to.frame(frames[0])
-time.sleep(30)
+time.sleep(35)
 
 # Click Publish
-publish_button = driver.find_elements(By.XPATH, "//button")
-publish_button[7].click() # Note that we find the button by index since it's information is not unique
+click_button_by_index(driver, 7)
 time.sleep(3)
 
 # Switch to default iframe
@@ -196,27 +188,23 @@ frame = driver.find_elements(By.XPATH, "//iframe")
 driver.switch_to.frame(frame[1])
 
 # Click Publish (Confirmation)
-publish_button_confirmation = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CLASS_NAME, "Polaris-Button--variantPrimary_1stsb")))
-publish_button_confirmation.click()
+wait_and_click(driver, By.CLASS_NAME, "Polaris-Button--variantPrimary_1stsb")
 time.sleep(3)
 
 # Switch to the main iframe
 driver.switch_to.default_content()
 
 # Click Products
-products_link = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.LINK_TEXT, "Products")))
-products_link.click()
+wait_and_click(driver, By.LINK_TEXT, "Products")
 time.sleep(5)
 
-# Click import
-import_button = driver.find_elements(By.XPATH, "//button")
-import_button[15].click()
-time.sleep(2)
+# Click Import
+click_button_by_index(driver, 15)
+time.sleep(3)
 
 # Click Add File
-add_product_file = driver.find_elements(By.XPATH, "//button")
-add_product_file[18].click()
-time.sleep(1)
+click_button_by_index(driver, 18)
+time.sleep(3)
 
 # Use pyautogui to upload file
 pyautogui.write(products_file)
@@ -224,27 +212,22 @@ pyautogui.press("enter")
 time.sleep(2)
 
 # Click upload and preview
-upload_preview_button = driver.find_elements(By.XPATH, "//button")
-upload_preview_button[20].click()
-time.sleep(3)
+click_button_by_index(driver, 20)
+time.sleep(6)
 
 # Click Import Products
-import_products_button = driver.find_elements(By.XPATH, "//button")
-import_products_button[-1].click()
+click_button_by_index(driver, -1)
 time.sleep(3)
 
 # Click Close
-close_button = driver.find_elements(By.XPATH, "//button")
-close_button[19].click()
+click_button_by_index(driver, 19)
 time.sleep(3)
 
 # Click Online Store
-online_store_link = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.LINK_TEXT, "Online Store")))
-online_store_link.click()
+wait_and_click(driver, By.LINK_TEXT, "Online Store")
 
 # Click Pages
-pages_link = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.LINK_TEXT, "Pages")))
-pages_link.click()
+wait_and_click(driver, By.LINK_TEXT, "Pages")
 time.sleep(3)
 
 # Switch to iframe with Add Page button
@@ -252,14 +235,11 @@ frames = driver.find_elements(By.XPATH, "//iframe")
 driver.switch_to.frame(frames[0])
 
 # Click Add Page
-add_page_button = driver.find_elements(By.XPATH, "//a")
-add_page_button[0].click()
+click_button_by_index_a(driver, 0)
 time.sleep(3)
 
 # Input Page Title
-page_title_input = WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "page-title")))
-page_title_input.send_keys("FAQ")
-time.sleep(1)
+wait_and_send_keys(driver, By.ID, "page-title", "FAQ")
 
 # Select FAQ
 select_element = driver.find_element(By.CLASS_NAME, "Polaris-Select__Input_30ock")
@@ -268,24 +248,19 @@ select.select_by_value("faq")
 time.sleep(1)
 
 # Click Save
-save_button = driver.find_elements(By.XPATH, "//button")
-save_button[33].click()
+click_button_by_index(driver, 33)
 time.sleep(3)
 
 # Go back
-go_back_button = driver.find_elements(By.XPATH, "//a") 
-go_back_button[0].click()
+click_button_by_index_a(driver, 0)
 time.sleep(3)
 
 # Click Add Page
-add_page_button = driver.find_elements(By.XPATH, "//a")
-add_page_button[0].click()
+click_button_by_index_a(driver, 0)
 time.sleep(3)
 
 # Input Page Title
-page_title_input = WebDriverWait(driver, 30).until(EC.visibility_of_element_located((By.ID, "page-title")))
-page_title_input.send_keys("Brand Story")
-time.sleep(2)
+wait_and_send_keys(driver, By.ID, "page-title", "Brand Story")
 
 # Select Brand Story
 select_element = driver.find_element(By.CLASS_NAME, "Polaris-Select__Input_30ock")
@@ -294,29 +269,27 @@ select.select_by_value("about-us")
 time.sleep(1)
 
 # Click Save
-save_button = driver.find_elements(By.XPATH, "//button")
-save_button[33].click()
+click_button_by_index(driver, 33)
 time.sleep(3)
 
 # Go back
-go_back_button = driver.find_elements(By.XPATH, "//a") 
-go_back_button[0].click()
+click_button_by_index_a(driver, 0)
 time.sleep(3)
 
 # Add more pages if needed
 
+driver.switch_to.default_content()
+
 # Click Pages
-content_link = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.LINK_TEXT, "Content")))
-content_link.click()
+wait_and_click(driver, By.LINK_TEXT, "Content")
+time.sleep(3)
 
 # Click Files
-files_link = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.LINK_TEXT, "Files")))
-files_link.click()
+wait_and_click(driver, By.LINK_TEXT, "Files")
 time.sleep(3)
 
 # Click Upload Files
-upload_files_button = driver.find_elements(By.XPATH, "//button")
-upload_files_button[16].click()
+click_button_by_index(driver, 16)
 time.sleep(3)
 
 # Use PyAutoGUI to navigate to the images
